@@ -13,10 +13,10 @@ ARG JVM_FLAVOR
 FROM openjdk:${JAVA_VERSION}-slim
 WORKDIR /app
 
-RUN groupadd --system campfire \
-    && useradd --system campfire --gid campfire \
-    && chown -R campfire:campfire /app
-USER campfire:campfire
+RUN groupadd --system nature \
+    && useradd --system nature --gid nature \
+    && chown -R nature:nature /app
+USER nature:nature
 
-COPY --from=builder /build/build/libs/docker/campfire.jar ./
-CMD ["java", "-jar", "/app/campfire.jar"]
+COPY --from=builder /build/build/libs/docker/nature.jar ./
+CMD ["java", "-jar", "/app/nature.jar"]
