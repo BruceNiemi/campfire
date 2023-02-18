@@ -2,7 +2,5 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 rootProject.name = "campfire"
 
-include(":application")
-include(":shared")
+include(":campfire-server", ":campfire-common", ":campfire-paper")
 
-include(":services:player-service")
