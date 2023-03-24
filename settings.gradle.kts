@@ -11,6 +11,7 @@ pluginManagement {
 rootProject.name = "campfire"
 
 sequenceOf(
+  "server",
   "bukkit",
   "velocity"
 ).forEach {
