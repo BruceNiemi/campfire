@@ -1,4 +1,13 @@
 services:
+  rabbit_mq:
+    container_name: rabbit_mq
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: campfire
+      RABBITMQ_DEFAULT_PASS: campfire
+    ports:
+      - "5672:5672"
+      - "15672:15672"
   redis:
     container_name: redis
     image: redis
@@ -6,11 +15,3 @@ services:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - "6379:6379"
-  postgres:
-    container_name: postgres
-    image: postgres
-    environment:
-      POSTGRES_PASSWORD: campfire
-      POSTGRES_USER: campfire
-    ports:
-      - "5432:5432"

@@ -10,11 +10,9 @@ pluginManagement {
 
 rootProject.name = "campfire"
 
-sequenceOf(
-  "server",
-  "bukkit",
-  "velocity"
-).forEach {
-  include("campfire-$it")
-  project(":campfire-$it").projectDir = file(it)
-}
+//sequenceOf(
+//
+//).forEach {
+//  include("campfire-$it")
+//  project(":campfire-$it").projectDir = file(it)
+//}
