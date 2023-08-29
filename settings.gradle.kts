@@ -11,7 +11,9 @@ pluginManagement {
 rootProject.name = "campfire"
 
 sequenceOf(
-  "player-service"
+  "minecraft-common",
+  "minecraft-homes",
+  "guice"
 ).forEach {
   include("campfire-$it")
   project(":campfire-$it").projectDir = file(it)
