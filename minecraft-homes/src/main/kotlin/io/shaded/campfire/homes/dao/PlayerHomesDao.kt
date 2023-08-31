@@ -42,7 +42,6 @@ interface PlayerHomesDao {
       (:player_id, :home_name, :world_name, :x, :y, :z)
     """
   )
-  @Transaction
   fun createHome(
     @Bind("player_id") id: UUID,
     @Bind("home_name") homeName: String,
@@ -58,10 +57,9 @@ interface PlayerHomesDao {
       WHERE player_id = :player_id AND home_name = :home_name
     """
   )
-  @Transaction
   fun deleteHome(
     @Named("player_id") id: UUID,
-    @Named(":home_name") name: String
+    @Named("home_name") name: String
   )
 
 }
