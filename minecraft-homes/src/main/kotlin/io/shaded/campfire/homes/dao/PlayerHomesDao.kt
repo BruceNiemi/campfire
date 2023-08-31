@@ -32,6 +32,7 @@ interface PlayerHomesDao {
         home_name
       FROM homes
       WHERE player_id = :id
+      ORDER BY created_at ASC
     """
   )
   fun getHomesNamesFromPlayer(@Bind("id") id: UUID): List<String>
