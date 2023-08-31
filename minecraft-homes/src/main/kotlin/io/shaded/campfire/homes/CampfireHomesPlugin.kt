@@ -52,6 +52,7 @@ class CampfireHomesPlugin : JavaPlugin() {
             x           DOUBLE PRECISION NOT NULL,
             y           DOUBLE PRECISION NOT NULL,
             z           DOUBLE PRECISION NOT NULL,
+            created_at  TIMESTAMPZ DEFAULT NOW(),
 
             UNIQUE(player_id, home_name)
           )

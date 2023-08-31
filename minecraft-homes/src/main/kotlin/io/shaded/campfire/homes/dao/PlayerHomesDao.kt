@@ -5,7 +5,6 @@ import org.jdbi.v3.sqlobject.config.RegisterConstructorMapper
 import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
-import org.jdbi.v3.sqlobject.transaction.Transaction
 import java.util.*
 import javax.inject.Named
 
@@ -22,6 +21,7 @@ interface PlayerHomesDao {
         z
       FROM homes
       WHERE player_id = :id
+      ORDER BY created_at ASC
     """
   )
   fun getHomesFromPlayer(@Bind("id") id: UUID): List<Home>
