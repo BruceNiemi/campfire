@@ -8,6 +8,6 @@ data class Home(
   val x: Double,
   val y: Double,
   val z: Double,
-  val createTime: Date
+  val createTime: Date? = null
 )
 

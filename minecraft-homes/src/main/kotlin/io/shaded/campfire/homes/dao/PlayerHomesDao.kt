@@ -29,6 +29,20 @@ interface PlayerHomesDao {
   @SqlQuery(
     """
       SELECT
+        home_name,
+        world_name,
+        x,
+        y,
+        z
+      FROM homes
+      WHERE player_id = :id AND home_name = :home
+    """
+  )
+  fun getHome(@Bind("id") id: UUID, @Bind("home") home: String) : Home?
+
+  @SqlQuery(
+    """
+      SELECT
         home_name
       FROM homes
       WHERE player_id = :id
@@ -36,6 +50,16 @@ interface PlayerHomesDao {
     """
   )
   fun getHomesNamesFromPlayer(@Bind("id") id: UUID): List<String>
+
+  @SqlQuery(
+    """
+      SELECT COUNT
+        (*)
+      FROM homes
+      WHERE player_id = :id
+    """
+  )
+  fun countPlayerHomes(@Bind("id") id: UUID): Int
 
   @SqlUpdate(
     """
