@@ -26,7 +26,7 @@ class CampfireHomesPlugin : JavaPlugin() {
     // Test configuration that will be moved into a proper configuration
     // system, but this works for the time being.
     val hikariConfig = HikariConfig().apply {
-      driverClassName = org.postgresql.Driver::javaClass.name
+      driverClassName = org.postgresql.Driver::class.qualifiedName
       jdbcUrl = "jdbc:postgresql://localhost:5432/campfire"
       username = "campfire"
       password = "campfire"
@@ -52,7 +52,7 @@ class CampfireHomesPlugin : JavaPlugin() {
             x           DOUBLE PRECISION NOT NULL,
             y           DOUBLE PRECISION NOT NULL,
             z           DOUBLE PRECISION NOT NULL,
-            created_at  TIMESTAMPZ DEFAULT NOW(),
+            created_at  TIMESTAMPTZ DEFAULT NOW(),
 
             UNIQUE(player_id, home_name)
           )
