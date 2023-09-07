@@ -5,6 +5,11 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### Minecraft Test Server ###
+/campfire-paper-env
+!/campfire-paper-env/start.sh
+!/campfire-paper-env/paper-1.20.1-170.jar
+
 ### STS ###
 .apt_generated
 .classpath
