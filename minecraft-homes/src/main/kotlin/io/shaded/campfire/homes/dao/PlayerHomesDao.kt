@@ -6,7 +6,7 @@ import org.jdbi.v3.sqlobject.customizer.Bind
 import org.jdbi.v3.sqlobject.statement.SqlQuery
 import org.jdbi.v3.sqlobject.statement.SqlUpdate
 import java.util.*
-import javax.inject.Named
+
 
 @RegisterConstructorMapper(Home::class)
 interface PlayerHomesDao {
@@ -18,7 +18,9 @@ interface PlayerHomesDao {
         world_name,
         x,
         y,
-        z
+        z,
+        pitch,
+        yaw
       FROM homes
       WHERE player_id = :id
       ORDER BY created_at ASC
@@ -33,12 +35,14 @@ interface PlayerHomesDao {
         world_name,
         x,
         y,
-        z
+        z,
+        pitch,
+        yaw
       FROM homes
       WHERE player_id = :id AND home_name = :home
     """
   )
-  fun getHome(@Bind("id") id: UUID, @Bind("home") home: String) : Home?
+  fun getHome(@Bind("id") id: UUID, @Bind("home") home: String): Home?
 
   @SqlQuery(
     """
@@ -63,8 +67,9 @@ interface PlayerHomesDao {
 
   @SqlUpdate(
     """
-      INSERT INTO homes (player_id, home_name, world_name, x, y, z) VALUES
-      (:player_id, :home_name, :world_name, :x, :y, :z)
+      INSERT INTO homes (player_id, home_name, world_name, x, y, z, pitch, yaw)
+      VALUES
+      (:player_id, :home_name, :world_name, :x, :y, :z, :pitch, :yaw)
     """
   )
   fun createHome(
@@ -73,7 +78,9 @@ interface PlayerHomesDao {
     @Bind("world_name") worldName: String,
     @Bind("x") x: Double,
     @Bind("y") y: Double,
-    @Bind("z") z: Double
+    @Bind("z") z: Double,
+    @Bind("pitch") pitch: Double,
+    @Bind("yaw") yaw: Double
   )
 
   @SqlUpdate(
@@ -83,8 +90,8 @@ interface PlayerHomesDao {
     """
   )
   fun deleteHome(
-    @Named("player_id") id: UUID,
-    @Named("home_name") name: String
+    @Bind("player_id") id: UUID,
+    @Bind("home_name") name: String
   )
 
 }

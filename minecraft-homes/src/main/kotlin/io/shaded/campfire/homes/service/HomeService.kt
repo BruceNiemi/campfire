@@ -13,8 +13,8 @@ class HomeService @Inject constructor(private val playerHomesDao: PlayerHomesDao
   sealed class CreateHomeResult {
     object Created : CreateHomeResult()
     object DuplicateName : CreateHomeResult()
-    object UnAllowedWorld : CreateHomeResult()
-    class MaximumHomes(val current: Int) : CreateHomeResult()
+    object WorldNotAllowed : CreateHomeResult()
+    data class MaximumHomes(val current: Int) : CreateHomeResult()
     object Error : CreateHomeResult()
   }
 
@@ -38,7 +38,9 @@ class HomeService @Inject constructor(private val playerHomesDao: PlayerHomesDao
       location.world.name,
       location.x,
       location.y,
-      location.z
+      location.z,
+      location.pitch.toDouble(),
+      location.yaw.toDouble()
     )
 
     return CreateHomeResult.Created
@@ -47,6 +49,10 @@ class HomeService @Inject constructor(private val playerHomesDao: PlayerHomesDao
   @Transaction
   fun deleteHome(player: Player, name: String) {
     this.playerHomesDao.deleteHome(player.uniqueId, name)
+  }
+
+  fun listPlayerHomes(player: Player): List<String> {
+    return this.playerHomesDao.getHomesNamesFromPlayer(player.uniqueId)
   }
 
   sealed class TeleportResult {
@@ -70,7 +76,12 @@ class HomeService @Inject constructor(private val playerHomesDao: PlayerHomesDao
     // false for some edge cases. If later down the line there are errors
     // with this function we can simply await the result of the teleport and
     // properly handle the errors further to the player.
-    player.teleportAsync(Location(world, home.x, home.y, home.z))
+    player.teleportAsync(
+      Location(
+        world, home.x, home.y, home.z, home.yaw.toFloat(),
+        home.pitch.toFloat()
+      )
+    )
 
     return TeleportResult.Teleported
   }

@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+  implementation(kotlin("reflect"))
   // Use JUnit Jupiter for testing.
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
 }

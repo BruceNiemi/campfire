@@ -1,7 +1,12 @@
 package io.shaded.campfire.homes
 
+import com.google.inject.Guice
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import io.shaded.campfire.homes.command.DeleteHomeCommand
+import io.shaded.campfire.homes.command.HomeCommand
+import io.shaded.campfire.homes.command.SetHomeCommand
+import io.shaded.campfire.homes.inject.CampfireModule
 import org.bukkit.plugin.java.JavaPlugin
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
@@ -52,13 +57,34 @@ class CampfireHomesPlugin : JavaPlugin() {
             x           DOUBLE PRECISION NOT NULL,
             y           DOUBLE PRECISION NOT NULL,
             z           DOUBLE PRECISION NOT NULL,
-            created_at  TIMESTAMPTZ DEFAULT NOW(),
+            pitch       DOUBLE PRECISION NOT NULL,
+            yaw         DOUBLE PRECISION NOT NULL,
+            created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
             UNIQUE(player_id, home_name)
           )
         """.trimIndent()
       )
     }
+
+    val injector = Guice.createInjector(CampfireModule(this, jdbi))
+
+    // This is null safe as we've defined the commands in the plugin.yml.
+    this.getCommand("home")?.setExecutor(
+      injector.getInstance(HomeCommand::class.java)
+    )
+    this.getCommand("home")?.tabCompleter =
+      injector.getInstance(HomeCommand::class.java)
+
+    this.getCommand("sethome")?.setExecutor(
+      injector.getInstance(SetHomeCommand::class.java)
+    )
+
+    this.getCommand("delhome")?.setExecutor(
+      injector.getInstance(DeleteHomeCommand::class.java)
+    )
+    this.getCommand("delhome")?.tabCompleter =
+      injector.getInstance(DeleteHomeCommand::class.java)
   }
 
   override fun onDisable() {
