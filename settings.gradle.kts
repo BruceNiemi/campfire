@@ -10,11 +10,7 @@ pluginManagement {
 
 rootProject.name = "campfire"
 
-sequenceOf(
-  "minecraft-common",
-  "minecraft-homes",
-  "guice"
-).forEach {
-  include("campfire-$it")
-  project(":campfire-$it").projectDir = file(it)
-}
+include(
+  ":campfire-minecraft-common", ":campfire-guice", ":campfire-minecraft-ui",
+  ":campfire-minecraft-homes"
+)
