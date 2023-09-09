@@ -1,8 +1,36 @@
 package io.shaded.campfire.ui.menu
 
+import io.shaded.campfire.ui.util.meta
+import org.bukkit.Material
+import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
 
 fun main() {
+
+}
+
+val a_ = menu {
+
+}
+
+val menu = menu("this is it") {
+  updates = true
+  updateDelay = 5
+
+  button(0, 1) {
+    item(Material.BOOK) {
+      meta<ItemMeta> {
+        displayName(net.kyori.adventure.text.Component.empty())
+      }
+    }
+
+    action {
+      // ...
+    }
+  }
 
 }
 
@@ -28,13 +56,23 @@ abstract class Component {
 
 }
 
+class ItemComponent : Component() {
+  lateinit var body: InventoryClickEvent.() -> Unit
+  fun item(material: Material, builder: ItemStack.() -> Unit) {}
+
+  fun action(action: InventoryClickEvent.() -> Unit) {
+    body = action
+  }
+
+}
+
 fun menu(title: String, type: InventoryType, apply: Menu.() -> Unit): Menu {
   return Menu().apply(apply)
 }
 
 
 fun menu(
-  title: String,
+  title: String = "",
   type: InventoryType = InventoryType.CHEST,
   size: MenuSize = SINGLE_CHEST,
   apply: Menu.() -> Unit,
@@ -42,4 +80,10 @@ fun menu(
   return Menu().apply(apply)
 }
 
-class Menu {}
+class Menu(val inventory: Inventory? = null) {
+  var updates = false
+  var updateDelay = 1
+}
+
+
+fun Menu.button(vararg slots: Int, builder: ItemComponent.() -> Unit) {}
