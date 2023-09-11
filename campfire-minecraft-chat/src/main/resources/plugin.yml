@@ -1,0 +1,6 @@
+name: campfire-chat
+author: Bruce
+main: io.shaded.campfire.chat.CampfireChatPlugin
+version: 0.0.1
+api-version: '1.20'
+
