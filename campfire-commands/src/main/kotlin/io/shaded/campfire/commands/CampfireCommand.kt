@@ -17,7 +17,7 @@ typealias CommandAction<S> = S.() -> Unit
  * @param S The type of the sender for the command.
  * @return `true` if the sender is allowed to execute the command; `false` otherwise.
  */
-typealias CommandCondition<S> = (sender: S, command: String?) -> Boolean
+typealias CommandCondition<S> = (sender: S, input: String?) -> Boolean
 
 class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
   private val conditions = hashSetOf<CommandCondition<S>>()
