@@ -24,6 +24,13 @@ class StringTokenizer(private val input: String) {
   fun next(): String? = this.tokenQueue.poll()
 
   /**
+   * Gets the current token in the queue and does not remove it from the queue.
+   *
+   * @return the current token, or null if there are no more tokens.
+   */
+  fun current(): String? = this.tokenQueue.peek()
+
+  /**
    * Returns true if there are more tokens in the queue.
    *
    * @return true if there are more tokens in the queue, false otherwise
