@@ -1,6 +1,7 @@
 package io.shaded.campfire.commands
 
 import io.shaded.campfire.commands.annotations.CampfireCommandDsl
+import io.shaded.campfire.commands.arguments.Argument
 
 /**
  * Represents an action associated with a command, which is executed only
@@ -21,7 +22,12 @@ typealias CommandCondition<S> = (sender: S, input: List<String>) -> Boolean
 
 class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
   private val conditions = hashSetOf<CommandCondition<S>>()
+  private val children = mutableMapOf<String, CampfireCommand<S>>()
+  val arguments = mutableListOf<Argument<S, *>>()
   lateinit var body: CommandAction<S>
+
+  val hasBody: Boolean
+    get() = ::body.isInitialized
 
   /**
    * Sets the action to be executed when this command is invoked.
@@ -59,9 +65,27 @@ class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
    */
   @CampfireCommandDsl
   fun command(
-    name: String, vararg aliases: String, init: CampfireCommand<S>.() -> Unit
-  ): CampfireCommand<S> {
-    return CampfireCommand<S>(name, aliases).apply(init)
+    name: String,
+    vararg aliases: String,
+    init: CampfireCommand<S>.() -> Unit
+  ) {
+    val command = CampfireCommand<S>(name, aliases).apply(init)
+
+    check(!children.containsKey(command.name)) { "Child with name ${command.name} already exists." }
+    this.children[command.name] = command
+
+    command.aliases.forEach {
+      check(!children.containsKey(it)) { "Child with alias $it already exists." }
+      this.children[it] = command
+    }
+  }
+
+  fun validate() {
+    // A root command if there is children can only execute iff there are no
+    // arguments.
+    check(!(hasBody && children.isNotEmpty() && arguments.isEmpty())) {
+      "A root command can only have a body if there is no arguments attached."
+    }
   }
 
 }
