@@ -1,11 +1,11 @@
-package io.shaded.campfire.commands.tree
+package io.shaded.campfire.commands.map
 
 import io.shaded.campfire.commands.CampfireCommand
 
 class CommandMap<S>(val prefix: String, val platform: Platform<S>) {
   private val children = mutableMapOf<String, CampfireCommand<S>>()
 
-  fun registerCommand(command: CampfireCommand<S>) {
+  fun addCommand(command: CampfireCommand<S>) {
     check(!children.containsKey(command.name)) { "Child with name ${command.name} already exists." }
     this.children[command.name] = command
 
@@ -22,8 +22,6 @@ class CommandMap<S>(val prefix: String, val platform: Platform<S>) {
     this.platform.registerCommand(command)
   }
 
-  fun suggest(sender: S, input: String): Iterable<String> {
-    return emptyList()
-  }
+  fun getCommand(name: String): CampfireCommand<S>? = this.children[name]
 }
 

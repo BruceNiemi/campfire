@@ -21,8 +21,8 @@ typealias CommandAction<S> = S.() -> Unit
 typealias CommandCondition<S> = (sender: S, input: List<String>) -> Boolean
 
 class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
-  private val conditions = hashSetOf<CommandCondition<S>>()
-  private val children = mutableMapOf<String, CampfireCommand<S>>()
+  val conditions = hashSetOf<CommandCondition<S>>()
+  val children = mutableMapOf<String, CampfireCommand<S>>()
   val arguments = mutableListOf<Argument<S, *>>()
   lateinit var body: CommandAction<S>
 

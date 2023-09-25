@@ -1,4 +1,4 @@
-package io.shaded.campfire.commands.tree
+package io.shaded.campfire.commands.map
 
 import io.shaded.campfire.commands.CampfireCommand
 
