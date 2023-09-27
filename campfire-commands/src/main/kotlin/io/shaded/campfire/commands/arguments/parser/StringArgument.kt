@@ -4,7 +4,7 @@ import io.shaded.campfire.commands.arguments.RequiredArgument
 import io.shaded.campfire.commands.exception.NoInputTokenException
 import java.util.*
 
-class StringArgument<S>(name: String, private val type: StringType) :
+class StringArgument<S>(name: String, val type: StringType) :
   RequiredArgument<S, String>(name) {
 
   /**

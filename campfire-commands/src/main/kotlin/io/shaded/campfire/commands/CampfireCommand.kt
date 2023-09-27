@@ -2,6 +2,10 @@ package io.shaded.campfire.commands
 
 import io.shaded.campfire.commands.annotations.CampfireCommandDsl
 import io.shaded.campfire.commands.arguments.Argument
+import io.shaded.campfire.commands.arguments.DefaultArgument
+import io.shaded.campfire.commands.arguments.OptionalArgument
+import io.shaded.campfire.commands.arguments.RequiredArgument
+import io.shaded.campfire.commands.arguments.parser.StringArgument
 
 /**
  * Represents an action associated with a command, which is executed only
@@ -36,7 +40,7 @@ class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
    */
   @CampfireCommandDsl
   fun execute(action: CommandAction<S>) {
-    check(this::body.isInitialized) {
+    check(!this::body.isInitialized) {
       "The command executor can only be set once."
     }
 
@@ -86,6 +90,46 @@ class CampfireCommand<S>(val name: String, val aliases: Array<out String>) {
     check(!(hasBody && children.isNotEmpty() && arguments.isEmpty())) {
       "A root command can only have a body if there is no arguments attached."
     }
+
+    var requiredArgumentFound = false
+    var defaultArgumentFound = false
+    var optionalArgumentFound = false
+    var greedyStringFound = false
+
+    for (argument in arguments) {
+      when (argument) {
+        is RequiredArgument<*, *> -> {
+          if (optionalArgumentFound || greedyStringFound) {
+            throw IllegalArgumentException("Required argument '${argument.name}' cannot appear after optional or greedy string arguments.")
+          }
+          requiredArgumentFound = true
+        }
+        is OptionalArgument<*, *> -> {
+          if (greedyStringFound) {
+            throw IllegalArgumentException("Optional argument '${argument.name}' cannot appear after a greedy string argument.")
+          }
+          optionalArgumentFound = true
+        }
+        is DefaultArgument<*, *> -> {
+          if (optionalArgumentFound || greedyStringFound) {
+            throw IllegalArgumentException("Default argument '${argument.name}' cannot appear after optional or greedy string arguments.")
+          }
+          defaultArgumentFound = true
+        }
+        else -> {
+          throw IllegalArgumentException("Unknown argument type for argument '${argument.name}'.")
+        }
+      }
+
+      if (argument is StringArgument<S> && argument.type == StringArgument.StringType.GREEDY_PHRASE) {
+        if (optionalArgumentFound || defaultArgumentFound || requiredArgumentFound) {
+          throw IllegalArgumentException("Greedy string argument '${argument.name}' cannot appear with other types of arguments.")
+        }
+        greedyStringFound = true
+      }
+    }
+
+
   }
 
 }

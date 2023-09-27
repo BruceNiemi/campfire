@@ -23,5 +23,8 @@ class CommandMap<S>(val prefix: String, val platform: Platform<S>) {
   }
 
   fun getCommand(name: String): CampfireCommand<S>? = this.children[name]
+
+  fun getCommandLabels(): Iterable<String> =
+    this.children.keys.toList() // Bruce - Does this need to be a list?
 }
 

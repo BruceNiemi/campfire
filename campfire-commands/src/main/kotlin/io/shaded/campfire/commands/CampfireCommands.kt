@@ -9,10 +9,10 @@ import java.util.*
  * @param S The type of the sender for the command.
  */
 abstract class CampfireCommands<S>(
-  val prefix: String,
-  val platform: Platform<S>
+  prefix: String,
+  platform: Platform<S>
 ) {
-  private val commandMap = CommandMap(prefix, platform)
+  val commandMap = CommandMap(prefix, platform)
 
   /**
    *
@@ -31,42 +31,46 @@ abstract class CampfireCommands<S>(
   fun dispatch(sender: S, input: String) {
     val inputQueue = tokenize(input)
 
-    // We should never not have input here but checking edge cases I guess.
-    val commandLabel = inputQueue.poll()
+    val command = this.findCommand(inputQueue)
       ?: throw CommandNotFoundException("Oops!, could not execute command.")
 
-    val command = this.findCommandRec(
-      inputQueue, this.commandMap.getCommand(commandLabel)
-    ) ?: throw CommandNotFoundException("Oops!, could not execute command.")
+    println("trying to run $command")
 
     // Now we have to parse the arguments.
     command.arguments
       .forEach { argument -> argument.parse(sender, inputQueue) }
 
     if (command.hasBody &&
-      command.conditions.all { it.invoke(sender, inputQueue) }) {
+      command.conditions.all { it.invoke(sender, inputQueue) }
+    ) {
       command.body.invoke(sender)
     }
+  }
+
+
+  private fun findCommand(input: Queue<String>): CampfireCommand<S>? {
+    val token = input.poll() ?: return null
+
+    return findCommandRec(input, commandMap.getCommand(token))
   }
 
   private tailrec fun findCommandRec(
     input: Queue<String>,
     command: CampfireCommand<S>?
   ): CampfireCommand<S>? {
-    // Base case.
-    if (command == null) return null
-
-    val label = input.poll() ?: return null
-
-    // Check if the label exists as a child of the current command.
-    val childCommand = command.children[label]
-
-    return if (childCommand != null) {
-      // If a child command with the given label exists, recursively search in it.
-      findCommandRec(input, childCommand)
-    } else {
-      childCommand
+    if (command == null) {
+      return null
     }
+
+    if (command.children.isEmpty()) {
+      return command
+    }
+
+    if (input.isEmpty()) {
+      return null
+    }
+
+    return findCommandRec(input, command.children[input.poll()])
   }
 
   /**
@@ -75,6 +79,33 @@ abstract class CampfireCommands<S>(
   fun suggestions(sender: S, input: String): Iterable<String> {
     val inputQueue = tokenize(input)
 
+    // There is nothing in the input queue so we can just return the labels.
+    if (inputQueue.isEmpty()) {
+      return this.commandMap.getCommandLabels()
+    }
+
+    var command = this.commandMap.getCommand(inputQueue.poll())
+
+    while (inputQueue.isNotEmpty()
+      && command != null
+      && command.children.isNotEmpty()
+    ) {
+      command = command.children[inputQueue.poll()]
+    }
+
+    if (command == null) {
+      return emptyList()
+    }
+
+    if (command.children.isNotEmpty()) {
+      return command.children.keys.toList()
+    } else {
+      if (inputQueue.size >= command.arguments.size) {
+        return emptyList()
+      }
+
+      return command.arguments[inputQueue.size].suggest(sender, inputQueue)
+    }
 
     return emptyList()
   }
