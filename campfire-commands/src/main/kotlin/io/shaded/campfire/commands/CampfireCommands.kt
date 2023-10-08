@@ -117,37 +117,13 @@ abstract class CampfireCommands<S>(
    */
   fun suggestions(sender: S, input: String): List<String> {
     val inputQueue = tokenize(input)
-    val suggestions = mutableListOf<String>()
 
-    // There is nothing in the input queue so we can just return the labels.
+    // We should never not have anything in the root.
     if (inputQueue.isEmpty()) {
       return this.commandMap.getCommandLabels()
     }
 
-    var command = this.commandMap.getCommand(inputQueue.poll())
-
-    while (inputQueue.isNotEmpty()
-      && command != null
-      && command.children.isNotEmpty()
-    ) {
-      command = command.children[inputQueue.poll()]
-    }
-
-    if (command == null) {
-      return suggestions
-    }
-
-    if (command.children.isNotEmpty()) {
-      suggestions.addAll(command.children.keys.toList())
-    } else {
-      if (inputQueue.size >= command.arguments.size) {
-        return suggestions
-      }
-
-      return command.arguments[inputQueue.size].suggest(sender, inputQueue)
-    }
-
-    return suggestions
+    return emptyList()
   }
 
 

@@ -51,6 +51,9 @@ class PaperCommand(
   ): List<String> {
     var input = args.joinToString(" ")
     input = this.label + " " + input
-    return this.campfireCommands.suggestions(sender, input)
+    val suggeested = this.campfireCommands.suggestions(sender, input)
+    println(args)
+    println(suggeested)
+    return suggeested
   }
 }

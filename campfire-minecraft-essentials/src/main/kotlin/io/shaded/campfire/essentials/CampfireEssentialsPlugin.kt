@@ -9,10 +9,14 @@ class CampfireEssentialsPlugin : JavaPlugin() {
     val paperCampfireCommands = PaperCampfireCommands(this)
 
     paperCampfireCommands.register("hello") {
-      val player by player("player")
+      command("hello") {
+        command("world") {}
 
-      execute {
-        sendMessage("Hello, ${player.name}.")
+        command("ez"){}
+      }
+
+      command("foo") {
+        command("bar"){}
       }
     }
   }
