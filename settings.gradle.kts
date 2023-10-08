@@ -12,6 +12,5 @@ rootProject.name = "campfire"
 
 include(
   ":campfire-minecraft-common", ":campfire-guice", ":campfire-minecraft-ui",
-  ":campfire-minecraft-homes", ":campfire-minecraft-commands",
-  ":campfire-minecraft-commands-paper", ":campfire-minecraft-chat"
+  ":campfire-minecraft-homes", ":campfire-commands", ":campfire-commands-paper"
 )
