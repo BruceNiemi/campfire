@@ -1,6 +1,0 @@
-name: campfire-essentials
-author: Bruce
-main: io.shaded.campfire.essentials.CampfireEssentialsPlugin
-version: 0.0.1
-api-version: '1.20'
-
