@@ -31,7 +31,7 @@ class IntegerArgument<S>(
    * @param tokenizer The string tokenizer to use for suggesting values.
    * @return A list of suggested Integer values.
    */
-  override fun suggest(sender: S, input: List<String>): Iterable<String> =
+  override fun suggest(sender: S, input: List<String>): List<String> =
     SUGGESTIONS
 
   companion object {

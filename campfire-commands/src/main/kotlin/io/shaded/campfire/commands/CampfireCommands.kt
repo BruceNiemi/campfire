@@ -1,18 +1,26 @@
 package io.shaded.campfire.commands
 
-import io.shaded.campfire.commands.exception.CommandNotFoundException
+import io.shaded.campfire.commands.exception.CommandSyntaxException
+import io.shaded.campfire.commands.exception.NoInputTokenException
 import io.shaded.campfire.commands.map.CommandMap
-import io.shaded.campfire.commands.map.Platform
 import java.util.*
 
 /**
  * @param S The type of the sender for the command.
  */
 abstract class CampfireCommands<S>(
-  prefix: String,
-  platform: Platform<S>
+  prefix: String
 ) {
-  val commandMap = CommandMap(prefix, platform)
+  val commandMap = CommandMap<S>(prefix)
+
+  fun register(
+    name: String,
+    vararg aliases: String,
+    init: CampfireCommand<S>.() -> Unit
+  ) {
+    val command = CampfireCommand<S>(name, aliases).apply(init)
+    this.register(command)
+  }
 
   /**
    *
@@ -25,30 +33,61 @@ abstract class CampfireCommands<S>(
    */
   abstract fun register(command: CampfireCommand<S>): Boolean
 
+  sealed class CommandExecutionResult {
+    object EXECUTED : CommandExecutionResult()
+    object CANCELLED : CommandExecutionResult()
+    object UNKNOWN : CommandExecutionResult()
+    object PRECONDITION_FAILED : CommandExecutionResult()
+    object EXECUTOR_EXCEPTION : CommandExecutionResult()
+    class INVALID_SYNTAX(val message: String) : CommandExecutionResult()
+  }
+
   /**
    *
    */
-  fun dispatch(sender: S, input: String) {
+  fun dispatch(sender: S, input: String): CommandExecutionResult {
     val inputQueue = tokenize(input)
 
     val command = this.findCommand(inputQueue)
-      ?: throw CommandNotFoundException("Oops!, could not execute command.")
+      ?: return CommandExecutionResult.UNKNOWN
 
-    println("trying to run $command")
+    if (!command.hasBody) {
+      return CommandExecutionResult.CANCELLED
+    }
+
+    val preconditions = command.conditions.all {
+      it.invoke(
+        sender,
+        inputQueue
+      )
+    }
+
+    if (!preconditions) {
+      return CommandExecutionResult.PRECONDITION_FAILED
+    }
 
     // Now we have to parse the arguments.
-    command.arguments
-      .forEach { argument -> argument.parse(sender, inputQueue) }
-
-    if (command.hasBody &&
-      command.conditions.all { it.invoke(sender, inputQueue) }
-    ) {
-      command.body.invoke(sender)
+    try {
+      command.arguments
+        .forEach { argument -> argument.parse(sender, inputQueue) }
+    } catch (ex: CommandSyntaxException) {
+      return CommandExecutionResult.INVALID_SYNTAX(ex.message)
+    } catch (ex: NoInputTokenException) {
+      return CommandExecutionResult.INVALID_SYNTAX(ex.message)
     }
+
+    try {
+      command.body.invoke(sender)
+    } catch (exception: Exception) {
+      exception.printStackTrace() // We still need to see the error from this.
+      return CommandExecutionResult.EXECUTOR_EXCEPTION
+    }
+
+    return CommandExecutionResult.EXECUTED
   }
 
 
-  private fun findCommand(input: Queue<String>): CampfireCommand<S>? {
+  fun findCommand(input: Queue<String>): CampfireCommand<S>? {
     val token = input.poll() ?: return null
 
     return findCommandRec(input, commandMap.getCommand(token))
@@ -76,8 +115,9 @@ abstract class CampfireCommands<S>(
   /**
    *
    */
-  fun suggestions(sender: S, input: String): Iterable<String> {
+  fun suggestions(sender: S, input: String): List<String> {
     val inputQueue = tokenize(input)
+    val suggestions = mutableListOf<String>()
 
     // There is nothing in the input queue so we can just return the labels.
     if (inputQueue.isEmpty()) {
@@ -94,33 +134,29 @@ abstract class CampfireCommands<S>(
     }
 
     if (command == null) {
-      return emptyList()
+      return suggestions
     }
 
     if (command.children.isNotEmpty()) {
-      return command.children.keys.toList()
+      suggestions.addAll(command.children.keys.toList())
     } else {
       if (inputQueue.size >= command.arguments.size) {
-        return emptyList()
+        return suggestions
       }
 
       return command.arguments[inputQueue.size].suggest(sender, inputQueue)
     }
 
-    return emptyList()
+    return suggestions
   }
 
 
-  private fun tokenize(input: String): LinkedList<String> {
+  fun tokenize(input: String): LinkedList<String> {
     val buildList = LinkedList<String>()
     val tokenizer = StringTokenizer(input, " ")
 
     while (tokenizer.hasMoreElements()) {
       buildList.add(tokenizer.nextToken())
-    }
-
-    if (input.endsWith(" ")) {
-      buildList.add("")
     }
 
     return buildList

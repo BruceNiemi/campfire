@@ -26,7 +26,7 @@ class LongArgument<S>(
     }
   }
 
-  override fun suggest(sender: S, input: List<String>): Iterable<String> =
+  override fun suggest(sender: S, input: List<String>): List<String> =
     SUGGESTIONS
 
   companion object {

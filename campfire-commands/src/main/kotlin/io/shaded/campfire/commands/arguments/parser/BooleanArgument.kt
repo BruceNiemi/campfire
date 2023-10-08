@@ -19,7 +19,7 @@ class BooleanArgument<S>(name: String) : RequiredArgument<S, Boolean>(name) {
     }
   }
 
-  override fun suggest(sender: S, input: List<String>): Iterable<String> =
+  override fun suggest(sender: S, input: List<String>): List<String> =
     SUGGESTIONS
 
   companion object {

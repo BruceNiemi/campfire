@@ -1,17 +1,19 @@
 package io.shaded.campfire.essentials
 
-import io.shaded.campfire.essentials.command.commands.GamemodeCommand
-import io.shaded.commands.paper.PaperCommandDispatcher
+import io.shaded.campfire.commands.paper.PaperCampfireCommands
+import io.shaded.campfire.commands.paper.arguments.player
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.function.Function
 
-/**
- *
- */
 class CampfireEssentialsPlugin : JavaPlugin() {
   override fun onEnable() {
-    val dispatcher = PaperCommandDispatcher(this, Function.identity())
+    val paperCampfireCommands = PaperCampfireCommands(this)
 
-    GamemodeCommand(dispatcher).init()
+    paperCampfireCommands.register("hello") {
+      val player by player("player")
+
+      execute {
+        sendMessage("Hello, ${player.name}.")
+      }
+    }
   }
 }

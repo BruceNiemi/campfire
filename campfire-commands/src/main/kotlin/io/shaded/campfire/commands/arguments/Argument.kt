@@ -11,6 +11,6 @@ abstract class Argument<S, T : Any?>(val name: String) {
 
   abstract fun parse(sender: S, input: Queue<String>)
 
-  open fun suggest(sender: S, input: List<String>): Iterable<String> =
+  open fun suggest(sender: S, input: List<String>): List<String> =
     emptyList()
 }

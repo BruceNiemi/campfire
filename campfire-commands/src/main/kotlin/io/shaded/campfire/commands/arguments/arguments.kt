@@ -228,30 +228,3 @@ fun <S> CampfireCommand<S>.optionalGreedyString(
   this.arguments.add(argument)
   return argument
 }
-
-// UUID argument
-
-fun <S> CampfireCommand<S>.uuid(
-  name: String
-): UUIDArgument<S> {
-  val argument = UUIDArgument<S>(name)
-  this.arguments.add(argument)
-  return argument
-}
-
-fun <S> CampfireCommand<S>.defaultUuid(
-  name: String,
-  supplier: DefaultArgumentSupplier<S, UUID>
-): DefaultArgumentAdapter<S, UUID> {
-  val argument = UUIDArgument<S>(name).default(supplier)
-  this.arguments.add(argument)
-  return argument
-}
-
-fun <S> CampfireCommand<S>.optionalUuid(
-  name: String
-): OptionalAdapter<S, UUID> {
-  val argument = UUIDArgument<S>(name).optional()
-  this.arguments.add(argument)
-  return argument
-}

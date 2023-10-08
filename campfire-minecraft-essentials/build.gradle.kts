@@ -4,8 +4,6 @@ plugins {
 }
 
 dependencies {
-  compileOnly(project(":campfire-minecraft-common"))
-  implementation(project(":campfire-minecraft-commands"))
-  implementation(project(":campfire-minecraft-commands-paper"))
-  implementation(project(":campfire-guice"))
+  implementation(project(":campfire-commands"))
+  implementation(project(":campfire-commands-paper"))
 }

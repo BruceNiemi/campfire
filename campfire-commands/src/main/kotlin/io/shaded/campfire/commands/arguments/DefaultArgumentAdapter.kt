@@ -18,7 +18,7 @@ class DefaultArgumentAdapter<S, T : Any>(
     }
   }
 
-  override fun suggest(sender: S, input: List<String>): Iterable<String> {
+  override fun suggest(sender: S, input: List<String>): List<String> {
     return this.argument.suggest(sender, input)
   }
 }
