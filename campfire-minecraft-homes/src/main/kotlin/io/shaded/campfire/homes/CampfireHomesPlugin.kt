@@ -6,10 +6,12 @@ import com.zaxxer.hikari.HikariDataSource
 import io.shaded.campfire.homes.command.DeleteHomeCommand
 import io.shaded.campfire.homes.command.HomeCommand
 import io.shaded.campfire.homes.command.SetHomeCommand
+import io.shaded.campfire.homes.dao.PlayerHomesDao
 import io.shaded.campfire.homes.inject.CampfireModule
 import org.bukkit.plugin.java.JavaPlugin
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
+import org.jdbi.v3.core.kotlin.withExtensionUnchecked
 import org.jdbi.v3.postgres.PostgresPlugin
 import org.jdbi.v3.sqlobject.SqlObjectPlugin
 import org.jdbi.v3.sqlobject.kotlin.KotlinSqlObjectPlugin
@@ -46,25 +48,8 @@ class CampfireHomesPlugin : JavaPlugin() {
       .installPlugin(KotlinPlugin())
       .installPlugin(PostgresPlugin())
 
-    jdbi.useTransaction<java.lang.Exception> {
-      it.execute(
-        """
-          CREATE TABLE IF NOT EXISTS homes (
-            id          SERIAL PRIMARY KEY,
-            player_id   UUID NOT NULL,
-            home_name   VARCHAR(36) NOT NULL,
-            world_name  VARCHAR(36) NOT NULL,
-            x           DOUBLE PRECISION NOT NULL,
-            y           DOUBLE PRECISION NOT NULL,
-            z           DOUBLE PRECISION NOT NULL,
-            pitch       DOUBLE PRECISION NOT NULL,
-            yaw         DOUBLE PRECISION NOT NULL,
-            created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
-
-            UNIQUE(player_id, home_name)
-          )
-        """.trimIndent()
-      )
+    jdbi.withExtensionUnchecked(PlayerHomesDao::class) {
+      it.createTable()
     }
 
     val injector = Guice.createInjector(CampfireModule(this, jdbi))

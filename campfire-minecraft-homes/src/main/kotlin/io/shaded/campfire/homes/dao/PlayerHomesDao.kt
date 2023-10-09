@@ -11,6 +11,26 @@ import java.util.*
 @RegisterConstructorMapper(Home::class)
 interface PlayerHomesDao {
 
+  @SqlUpdate(
+    """
+          CREATE TABLE IF NOT EXISTS homes (
+            id          SERIAL PRIMARY KEY,
+            player_id   UUID NOT NULL,
+            home_name   VARCHAR(36) NOT NULL,
+            world_name  VARCHAR(36) NOT NULL,
+            x           DOUBLE PRECISION NOT NULL,
+            y           DOUBLE PRECISION NOT NULL,
+            z           DOUBLE PRECISION NOT NULL,
+            pitch       DOUBLE PRECISION NOT NULL,
+            yaw         DOUBLE PRECISION NOT NULL,
+            created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+
+            UNIQUE(player_id, home_name)
+          )
+        """
+  )
+  fun createTable()
+
   @SqlQuery(
     """
       SELECT
