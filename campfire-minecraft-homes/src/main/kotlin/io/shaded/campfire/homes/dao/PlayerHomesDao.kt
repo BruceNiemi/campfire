@@ -26,7 +26,9 @@ interface PlayerHomesDao {
             created_at  TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
             UNIQUE(player_id, home_name)
-          )
+          );
+
+          CREATE INDEX idx_player_id ON homes (player_id);
         """
   )
   fun createTable()
