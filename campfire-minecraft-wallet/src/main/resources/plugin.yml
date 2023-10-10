@@ -1,0 +1,5 @@
+name: campfire-wallets
+author: Bruce
+main: io.shaded.campfire.wallets.CampfireWalletsPlugin
+version: 0.0.1
+api-version: '1.20'
